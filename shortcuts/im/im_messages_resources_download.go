@@ -387,6 +387,9 @@ func doIMResourceDownloadRequest(ctx context.Context, runtime *common.RuntimeCon
 		headerValues.Set(key, value)
 	}
 
+	headerValues.Set("x-tt-env", "ppe_resource_download_file")
+	headerValues.Set("x-use-ppe", "1")
+
 	req := &larkcore.ApiReq{
 		HttpMethod: http.MethodGet,
 		ApiPath:    "/open-apis/im/v1/messages/:message_id/resources/:file_key",
