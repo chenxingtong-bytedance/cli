@@ -40,6 +40,7 @@ Chat (oc_xxx)
 - `--as user` means **user identity** and uses `user_access_token`. Calls run as the authorized end user, so permissions depend on both the app scopes and that user's own access to the target chat/message/resource.
 - `--as bot` means **bot identity** and uses `tenant_access_token`. Calls run as the app bot, so behavior depends on the bot's membership, app visibility, availability range, and bot-specific scopes.
 - If an IM API says it supports both `user` and `bot`, the token type changes who the operator is. The same API can succeed with one identity and fail with the other because owner/admin status, chat membership, tenant boundary, or app availability are checked against the current caller.
+- Media upload (`images.create`, `files.create`) follows the caller's identity: UAT when `--as user` (requires `im:resource` on the UAT), TAT when `--as bot`. The `+messages-send` / `+messages-reply` shortcuts upload and send in a single identity — do not split the steps across identities.
 
 ### Sender Name Resolution
 
@@ -190,7 +191,11 @@ lark-cli im <resource> <method> [flags] # 调用 API
 
 ### images
 
-  - `create` — 上传图片。Identity: `bot` only (`tenant_access_token`).
+  - `create` — 上传图片。Identity: supports `user` and `bot`; user identity requires `im:resource` scope on the UAT.
+
+### files
+
+  - `create` — 上传文件。Identity: supports `user` and `bot`; user identity requires `im:resource` scope on the UAT.
 
 ### pins
 
@@ -238,6 +243,7 @@ lark-cli im <resource> <method> [flags] # 调用 API
 | `reactions.list` | `im:message.reactions:read` |
 | `threads.forward` | `im:message` |
 | `images.create` | `im:resource` |
+| `files.create` | `im:resource` |
 | `pins.create` | `im:message.pins:write_only` |
 | `pins.delete` | `im:message.pins:write_only` |
 | `pins.list` | `im:message.pins:read` |
